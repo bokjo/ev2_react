@@ -1,41 +1,48 @@
 import React, { Component } from 'react';
-import ToDoForm from './ToDoForm';
-import ToDoContainer from './ToDoContainer';
+
+const test = 6;
 class App extends Component {
 
-  constructor () {
+  constructor(){
     super();
 
     this.state = {
-        // EMPTY TODOS ON START
-        todos: [
-          "oen",
-          "two",
-          "tree",
-        ]
-    };
-
-    this.addToDo = this.addToDo.bind(this);
-    this.removeItem = this.removeItem.bind(this);
-  }
-  
-  addToDo(todo) {
-    this.setState({
-      todos: [...this.state.todos, todo]
-    })    
+      posts: []
+    }
+    
   }
 
-  removeItem(index) {
-    this.setState({
-      todos: this.state.todos.filter((v, i) => index !== i)
+  componentDidMount() {
+    fetch("https://jsonplaceholder.typicode.com/posts")
+    .then((res) => {
+      return res.json();
+    })
+    .then((data) => {
+      console.log(data);
+      this.setState({
+        posts: data
+      });
+    })
+    .catch((err) => {
+      console.log(err)
     })
   }
 
   render() {
     return (
-     <div> 
-         <ToDoForm addToDo={this.addToDo}/>
-         <ToDoContainer todos={this.state.todos} removeItem={this.removeItem}/>
+     <div>        
+     {
+       this.state.posts.map((item, index) => {
+         return (
+          <div key={item.id}>
+            <h3>{item.id}. {item.title}</h3>
+            <p>{item.body}</p>
+          </div>
+         );
+       })
+     }
+     <button onClick={this.ChangePage(-1)}>Previous</button>
+     <button onClick={this.ChangePage(+1)}>Next</button>
      </div>
     );
   }
