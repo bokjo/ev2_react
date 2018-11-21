@@ -1,50 +1,79 @@
-import React, { Component } from 'react';
+import React from 'react';
+import {Route, Link} from 'react-router-dom';
 
-const test = 6;
-class App extends Component {
+class App extends React.Component {
+  render() {
+    return (
+      <div>
+        <h1>HElloz!</h1>
+        <nav>
+          <Link to="/" >Home</Link>
+        </nav>
+        <Route path="/" exact component={Titles}/>
+        <Route path="/posts/:id" component={Post}/>
+      </div>
+    )
+  }
+}
 
-  constructor(){
+class Post extends React.Component {
+  constructor() {
     super();
-
     this.state = {
-      posts: []
+      post: {}
     }
-    
   }
 
   componentDidMount() {
-    fetch("https://jsonplaceholder.typicode.com/posts")
-    .then((res) => {
-      return res.json();
-    })
-    .then((data) => {
-      console.log(data);
-      this.setState({
-        posts: data
+    let url = "https://jsonplaceholder.typicode.com/posts/"+this.props.match.params.id;
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        this.setState({
+          post: data
+        })
       });
-    })
-    .catch((err) => {
-      console.log(err)
-    })
   }
 
-  render() {
+  render () {
     return (
-     <div>        
-     {
-       this.state.posts.map((item, index) => {
-         return (
-          <div key={item.id}>
-            <h3>{item.id}. {item.title}</h3>
-            <p>{item.body}</p>
-          </div>
-         );
-       })
-     }
-     <button onClick={this.ChangePage(-1)}>Previous</button>
-     <button onClick={this.ChangePage(+1)}>Next</button>
-     </div>
-    );
+      <div>
+        <h2>{this.state.post.title}</h2>
+        <p>{this.state.post.body}</p>
+      </div>
+    )
+  }
+}
+
+class Titles extends React.Component {
+
+  constructor () {
+    super();
+    this.state = {
+      posts: []
+    }
+  }
+
+  componentDidMount () {
+    fetch('https://jsonplaceholder.typicode.com/posts')
+      .then(res => res.json())
+      .then(data => {
+        this.setState({
+          posts: data
+        })
+      });
+  }
+
+  render () {
+    return (
+      <ul>
+        {this.state.posts.map((p) => {
+          return (<li key={p.id}>
+            <Link to={`/posts/${p.id}`}>{p.title}</Link>
+          </li>)
+        })}
+      </ul>
+    )
   }
 }
 
