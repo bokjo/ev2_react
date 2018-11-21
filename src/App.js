@@ -1,80 +1,112 @@
 import React from 'react';
-import {Route, Link} from 'react-router-dom';
+import {Route, Link, Redirect} from 'react-router-dom';
 
 class App extends React.Component {
+
+  constructor(){
+    super();
+
+    this.state = {
+      loggedin: false
+    }
+
+    this.loginUser = this.loginUser.bind(this);
+
+  }
+
+  loginUser(){
+    this.setState({
+      loggedin: true
+    })
+  }
+  
+
+render() {
+  return (
+    <div>
+      <h1>Title</h1>
+      {/* <Route path="/" exact component={LoginForm} loginUser={this.loginUser.bind(this)}/> */}
+
+      <Route exact path="/" render={()=> (
+        this.state.loggedin ? 
+        (
+          <Redirect to="/dashboard" />
+        ) : 
+        (
+          <LoginForm loginUser={this.loginUser} />
+        )
+      )}/>
+      <Route path="/dashboard" exact render={()=> <Dashboard  />}/>
+
+    </div>
+  )
+}
+
+}
+
+class Dashboard extends React.Component {
+  render() {
+    return (
+      <div> DASHBOARD!</div>
+    )
+  }
+}
+
+class LoginForm extends React.Component {
+  constructor(){
+
+    super();
+    this.state = {
+      username: "",
+      password: "",
+    }
+
+    
+  this.logIn = this.logIn.bind(this);
+  this.changeUsername = this.changeUsername.bind(this);
+  this.changePassword = this.changePassword.bind(this);
+
+  }
+
+  logIn(){
+    if (this.state.username === 'test' && this.state.password === 'test') {
+      console.log("LOGIN!");
+      this.props.loginUser();
+    }
+  }
+  
+  changeUsername(e){
+    this.setState({
+      username: e.target.value
+    })
+  }
+  
+  changePassword(e){
+    this.setState({
+      password: e.target.value
+    })
+  }
+
   render() {
     return (
       <div>
-        <h1>HElloz!</h1>
-        <nav>
-          <Link to="/" >Home</Link>
-        </nav>
-        <Route path="/" exact component={Titles}/>
-        <Route path="/posts/:id" component={Post}/>
+        <label>
+          Username <br/>
+          <input type="text" value={this.state.username} onChange={this.changeUsername}/>
+        </label>
+        <br />
+        <label>
+          Password <br/>
+          <input type="password" value={this.state.password} onChange={this.changePassword} />
+        </label>
+        <br />
+        <button onClick={this.logIn}>Log in</button>
       </div>
     )
   }
+  
+
 }
 
-class Post extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      post: {}
-    }
-  }
-
-  componentDidMount() {
-    let url = "https://jsonplaceholder.typicode.com/posts/"+this.props.match.params.id;
-    fetch(url)
-      .then(res => res.json())
-      .then(data => {
-        this.setState({
-          post: data
-        })
-      });
-  }
-
-  render () {
-    return (
-      <div>
-        <h2>{this.state.post.title}</h2>
-        <p>{this.state.post.body}</p>
-      </div>
-    )
-  }
-}
-
-class Titles extends React.Component {
-
-  constructor () {
-    super();
-    this.state = {
-      posts: []
-    }
-  }
-
-  componentDidMount () {
-    fetch('https://jsonplaceholder.typicode.com/posts')
-      .then(res => res.json())
-      .then(data => {
-        this.setState({
-          posts: data
-        })
-      });
-  }
-
-  render () {
-    return (
-      <ul>
-        {this.state.posts.map((p) => {
-          return (<li key={p.id}>
-            <Link to={`/posts/${p.id}`}>{p.title}</Link>
-          </li>)
-        })}
-      </ul>
-    )
-  }
-}
 
 export default App;
