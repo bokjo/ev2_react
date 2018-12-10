@@ -1,5 +1,4 @@
-import { POST_ADD } from '../constants/actions';
-import { POST_DELETE } from '../constants/actions';
+import {POST_ADD, POST_DELETE} from '../constants/actions';
 
 export const PostAdd = (data) => {
     return {
@@ -8,9 +7,9 @@ export const PostAdd = (data) => {
     }
 }
 
-export const PostDelete = (data) => {
+export const PostDelete = (id) => {
     return {
         type: POST_DELETE,
-        payload: data
+        payload: id
     }
 }
